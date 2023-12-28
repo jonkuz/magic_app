@@ -56,7 +56,6 @@ class _CounterState extends State<Counter> {
     int i = widget.counter;
     Color c = widget.backgroundColor;
     return Container(
-      color: c,
       width: MediaQuery.of(context).size.width,
       // Set the background color here
       child: Stack(

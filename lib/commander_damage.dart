@@ -26,7 +26,6 @@ class _CommanderDamageState extends State<CommanderDamage> {
     int i = widget.counter;
     Color c = widget.backgroundColor;
     return Container(
-      color: c,
       width: MediaQuery.of(context).size.width,
       height: 75, // Set the background color here
       child: Stack(

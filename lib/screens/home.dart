@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:magic_app/counter.dart';
-import 'package:magic_app/menu.dart';
-import 'package:magic_app/listener/player_health.dart';
-import 'dart:math';
+import 'package:magic_app/database/database_helper.dart';
 
-import 'package:magic_app/screens/settings.dart';
-import 'package:magic_app/widgets/navigationbar.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:magic_app/database/player.dart';
+import 'dart:math';
+import '../assets/constants.dart' as constants;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,11 +13,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Color counterColor = Color(0xFF63AB77);
-  Color counterColor1 = Color(0xFF8F2222);
-  bool showMenu = false;
-  bool _extraCountersMenu = false;
-  bool _showAppBar = false;
+  DatabaseHelper databaseHelper = DatabaseHelper();
   Color generateRandomColor() {
     Random random = Random();
     int r = random.nextInt(256);
@@ -34,24 +25,67 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _showAppBar
-          ? AppBar(
-              title: const Text('Magic Life Counter'),
-              backgroundColor: Colors.green.shade200,
-              actions: <Widget>[
-                IconButton(
-                  icon: const Icon(Icons.settings),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/settings');
-                  },
-                ),
-              ],
-            )
-          : null,
-      body: Stack(
-        children: [
-          Center(child: Text("Hallo Home Screen")),
+      appBar: AppBar(
+        title: const Text('Magic Life Counter'),
+        forceMaterialTransparency: false,
+        backgroundColor: constants.ACCENT_COLOR1,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.pushNamed(context, '/settings');
+            },
+          ),
         ],
+      ),
+      body: FutureBuilder<List<Player>>(
+        future: DatabaseHelper().players(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No players available.'));
+          } else {
+            return DataTable(
+              columns: const [
+                DataColumn(label: Text('ID')),
+                DataColumn(label: Text('Name')),
+                DataColumn(label: Text('Active')),
+                DataColumn(label: Text('Health')),
+                DataColumn(label: Text('Shield')),
+                DataColumn(label: Text('Commander Damage')),
+                DataColumn(label: Text('Color')),
+              ],
+              rows: snapshot.data!.map((player) {
+                return DataRow(
+                  cells: [
+                    DataCell(Text(
+                        player.id.toString())), // New DataCell for 'active'
+                    DataCell(Text(player.name)),
+                    DataCell(
+                        Checkbox(
+                          value: player.active == "true" ? true : false,
+                          onChanged: (value) async {
+                            player.active = value.toString();
+                            await DatabaseHelper().updatePlayer(player);
+                            setState(() {});
+                          },
+                        ), onTap: () async {
+                      player.active =
+                          player.active == "true" ? "false" : "true";
+                      await DatabaseHelper().updatePlayer(player);
+                      setState(() {});
+                    }),
+                    DataCell(Text(player.health.toString())),
+                    DataCell(Text(player.shield.toString())),
+                    DataCell(Text(player.commanderDamage.toString())),
+                    DataCell(Text(player.color)),
+                  ],
+                );
+              }).toList(),
+            );
+          }
+        },
       ),
     );
   }

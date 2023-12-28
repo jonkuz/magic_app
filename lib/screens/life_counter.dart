@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:magic_app/database/database_helper.dart';
+import 'package:magic_app/database/player.dart';
 
 import 'package:magic_app/screens/counter_screen.dart';
 
 import 'dart:math';
-
-import 'package:provider/provider.dart';
+import '../assets/constants.dart' as constants;
 
 class LifeCounter extends StatefulWidget {
   const LifeCounter({super.key});
@@ -14,8 +15,10 @@ class LifeCounter extends StatefulWidget {
 }
 
 class _LifeCounterState extends State<LifeCounter> {
-  Color counterColor = Color(0xFF63AB77);
-  Color counterColor1 = Color(0xFF8F2222);
+  DatabaseHelper databaseHelper = DatabaseHelper();
+
+  Color counterColor = constants.BACKGROUND_COLOR;
+  Color counterColor1 = constants.BACKGROUND_COLOR;
   bool showMenu = false;
   bool _extraCountersMenu = false;
   bool _showAppBar = true;
@@ -37,7 +40,7 @@ class _LifeCounterState extends State<LifeCounter> {
     return Scaffold(
       appBar: _showAppBar
           ? AppBar(
-              backgroundColor: counterColor1,
+              backgroundColor: constants.BACKGROUND_COLOR,
             )
           : null,
       body: Container(
@@ -121,10 +124,7 @@ class _LifeCounterState extends State<LifeCounter> {
                         children: [
                           FloatingActionButton(
                             onPressed: () {
-                              setState(() {
-                                counterColor = generateRandomColor();
-                                counterColor1 = generateRandomColor();
-                              });
+                              setState(() {});
                             },
                             child: const Icon(Icons.palette),
                           )

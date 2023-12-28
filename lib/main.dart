@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> {
         '/menu': (context) => const Menu(),
         '/counter': (context) => const LifeCounter(),
       },
-      home: const Scaffold(
+      home: Scaffold(
         body: HomeScreen(),
         bottomNavigationBar: BottomNavigationBarExample(),
       ),

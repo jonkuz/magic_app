@@ -4,6 +4,19 @@ import 'package:magic_app/listener/shield.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum PlayerEnum {
+  blue(1, "1", Colors.blue),
+  pink(2, "2", Colors.pink),
+  green(3, "3", Colors.green),
+  yellow(4, "4", Colors.orange),
+  grey(5, "5", Colors.grey);
+
+  const PlayerEnum(this.value, this.label, this.color);
+  final int value;
+  final String label;
+  final Color color;
+}
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -14,6 +27,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
 // Load and obtain the shared preferences for this app.
   final prefs = SharedPreferences.getInstance();
+  int playerNumbers = 0;
 
 // Save the counter value to persistent storage under the 'counter' key.
 
@@ -55,7 +69,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
               Padding(
-                padding: EdgeInsets.only(top: 20.0),
+                padding: const EdgeInsets.only(top: 20.0),
                 child: Row(
                   children: [
                     const Text('Shield', style: TextStyle(fontSize: 20)),
@@ -77,6 +91,45 @@ class _SettingsPageState extends State<SettingsPage> {
                         },
                         controller: TextEditingController(
                             text: context.watch<Shield>().shield.toString()),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0, left: 8.0),
+                child: Row(
+                  children: [
+                    const Text('Players', style: TextStyle(fontSize: 20)),
+                    const Spacer(),
+                    SizedBox(
+                      child: DropdownMenu<PlayerEnum>(
+                        initialSelection: PlayerEnum.values[1],
+                        enableFilter: false,
+                        requestFocusOnTap: true,
+                        leadingIcon: const Icon(Icons.group),
+                        label: const Text('Players'),
+                        inputDecorationTheme: const InputDecorationTheme(
+                          filled: true,
+                          contentPadding: EdgeInsets.symmetric(vertical: 5.0),
+                        ),
+                        onSelected: (player) {
+                          setState(() {
+                            playerNumbers = player?.value ?? 1;
+                          });
+                        },
+                        dropdownMenuEntries: PlayerEnum.values
+                            .map<DropdownMenuEntry<PlayerEnum>>(
+                                (PlayerEnum player) {
+                          return DropdownMenuEntry<PlayerEnum>(
+                            value: player,
+                            label: player.label,
+                            enabled: player.label != 'Grey',
+                            style: MenuItemButton.styleFrom(
+                              foregroundColor: player.color,
+                            ),
+                          );
+                        }).toList(),
                       ),
                     )
                   ],

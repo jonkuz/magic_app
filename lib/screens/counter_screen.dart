@@ -7,6 +7,7 @@ import 'package:magic_app/listener/player_health.dart';
 import 'package:magic_app/listener/shield.dart';
 import 'package:magic_app/shield_counter.dart';
 import 'dart:math';
+import '../assets/constants.dart' as constants;
 
 import 'package:provider/provider.dart';
 
@@ -22,7 +23,7 @@ class CounterScreen extends StatefulWidget {
 
 class _CounterScreen extends State<CounterScreen> {
   Color counterColor = Color(0xFF63AB77);
-  Color counterColor1 = Color(0xFF8F2222);
+  Color counterColor1 = constants.BACKGROUND_COLOR;
   bool showMenu = false;
   bool _extraCountersMenu = false;
   bool _showAppBar = false;
@@ -49,12 +50,8 @@ class _CounterScreen extends State<CounterScreen> {
           Column(
             children: <Widget>[
               Expanded(
-                child: Stack(
+                child: Column(
                   children: [
-                    Counter(
-                      counterColor1,
-                      context.watch<PlayerHealth>().health,
-                    ),
                     Visibility(
                       visible: _showShield,
                       child: Padding(
@@ -62,6 +59,10 @@ class _CounterScreen extends State<CounterScreen> {
                         child: ShieldCounter(
                             counterColor1, context.watch<Shield>().shield),
                       ),
+                    ),
+                    Counter(
+                      counterColor1,
+                      context.watch<PlayerHealth>().health,
                     ),
                     Visibility(
                       visible: _showCommanderDamage,
